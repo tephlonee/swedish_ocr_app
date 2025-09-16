@@ -1,0 +1,7 @@
+numpy
+opencv-python
+pytesseract
+torch
+Pillow
+transformers
+deskew
