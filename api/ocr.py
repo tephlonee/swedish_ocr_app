@@ -25,7 +25,7 @@ import os
 import sys
 import re
 import tempfile
-from pathlib import Path
+import math
 from typing import Optional, Union
 
 try:
@@ -34,11 +34,29 @@ try:
     import cv2
     import numpy as np
     from transformers import pipeline, MarianMTModel, MarianTokenizer
+    from deskew import determine_skew
 except ImportError as e:
     print(f"Missing required library: {e}")
     print("Please install required packages:")
     print("pip install pytesseract Pillow transformers torch opencv-python")
     sys.exit(1)
+    
+    
+
+
+
+def deskew_image(image: np.ndarray) -> np.ndarray:
+    angle = determine_skew(image)
+    old_width, old_height = image.shape[:2]
+    angle_radian = math.radians(angle)
+    width = abs(np.sin(angle_radian) * old_height) + abs(np.cos(angle_radian) * old_width)
+    height = abs(np.sin(angle_radian) * old_width) + abs(np.cos(angle_radian) * old_height)
+
+    image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    rot_mat[1, 2] += (width - old_width) / 2
+    rot_mat[0, 2] += (height - old_height) / 2
+    return cv2.warpAffine(image, rot_mat, (int(round(height)), int(round(width))), borderValue=(0, 0, 0))
 
 
 class ResidencePermitProcessor:
