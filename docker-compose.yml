@@ -16,5 +16,5 @@ services:
     volumes:
       - ./web:/app
     depends_on:
-      - ocr-app
+      - ocr_app
     command: npm run dev -- --host 0.0.0.0 --port 3000
