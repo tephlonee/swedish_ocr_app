@@ -1,7 +1,6 @@
 numpy
 opencv-python
 pytesseract
-torch
 Pillow
 deskew
 pydantic
