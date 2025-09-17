@@ -41,9 +41,6 @@ except ImportError as e:
     print("pip install pytesseract Pillow transformers torch opencv-python")
     sys.exit(1)
     
-    
-
-
 
 def deskew_image(image: np.ndarray) -> np.ndarray:
     angle = determine_skew(image)
@@ -255,7 +252,7 @@ class ResidencePermitProcessor:
                 return ' '.join(translated_chunks)
 
             except Exception as e:
-                print(f"Translation error: {e}")
+                print(f"Translation error: {e}")                                 
                 return self._basic_translate(text)
         else:
             return self._basic_translate(text)
