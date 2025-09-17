@@ -3,5 +3,8 @@ opencv-python
 pytesseract
 torch
 Pillow
-transformers
 deskew
+pydantic
+pydantic_settings
+openai
+googletrans

@@ -35,6 +35,8 @@ try:
     import numpy as np
     from transformers import pipeline, MarianMTModel, MarianTokenizer
     from deskew import determine_skew
+    
+    from api.translation import Translator
 except ImportError as e:
     print(f"Missing required library: {e}")
     print("Please install required packages:")
@@ -69,24 +71,6 @@ class ResidencePermitProcessor:
 
         # Initialize translation model (Swedish to English)
         self.translator = None
-        self._load_translator()
-
-    def _load_translator(self):
-        """Load the translation model."""
-        try:
-            print("Loading Swedish to English translation model...")
-            model_name = "Helsinki-NLP/opus-mt-sv-en"
-            self.translator = pipeline(
-                "translation",
-                model=model_name,
-                tokenizer=model_name,
-                device=-1  # Use CPU (-1) or 0 for GPU
-            )
-            print("Translation model loaded successfully!")
-        except Exception as e:
-            print(f"Error loading translation model: {e}")
-            print("Falling back to basic word replacement...")
-            self.translator = None
 
     def preprocess_image(self, image_path: Union[str , bytes]) -> np.ndarray:
         """
@@ -119,7 +103,7 @@ class ResidencePermitProcessor:
 
         deskewd = deskew_image(denoised)
 
-        _, thresh = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        _, thresh = cv2.threshold(deskewd, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         heights = [cv2.boundingRect(c)[3] for c in contours if cv2.boundingRect(c)[3] > 5]
@@ -237,25 +221,7 @@ class ResidencePermitProcessor:
         if not text:
             return ""
 
-        if self.translator:
-            try:
-                # Split text into chunks (transformers have token limits)
-                max_length = 512
-                chunks = [text[i:i+max_length] for i in range(0, len(text), max_length)]
-
-                translated_chunks = []
-                for chunk in chunks:
-                    if chunk.strip():
-                        result = self.translator(chunk, max_length=512)
-                        translated_chunks.append(result[0]['translation_text'])
-
-                return ' '.join(translated_chunks)
-
-            except Exception as e:
-                print(f"Translation error: {e}")                                 
-                return self._basic_translate(text)
-        else:
-            return self._basic_translate(text)
+        return Translator().translate(text , 'sv' , 'en')
 
     def _basic_translate(self, text: str) -> str:
         """
