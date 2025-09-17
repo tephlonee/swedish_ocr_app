@@ -9,12 +9,10 @@ services:
     command: uvicorn app:app --host 0.0.0.0 --port 5000 --reload
 
   react-app:
-    image: node:22.15.0-alpine
     build: ./web
     ports:
-      - "3000:3000"
+      - "3000:80"
     volumes:
       - ./web:/app
     depends_on:
       - ocr_app
-    command: npm run dev -- --host 0.0.0.0 --port 3000

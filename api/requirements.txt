@@ -8,3 +8,5 @@ pydantic
 pydantic_settings
 openai
 googletrans
+uvicorn
+fastapi
