@@ -1,9 +1,9 @@
-
+import asyncio
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 
-from api.ocr import ResidencePermitProcessor
+from api.celery import process_ocr
 
 
 app = FastAPI()
@@ -13,10 +13,12 @@ async def ocr(file: UploadFile = File(...), lang: str = "swe"):
     # Load image from upload
     image_bytes = await file.read()
 
-    text = ResidencePermitProcessor().process_document(image_bytes, "output.txt")
+    task = process_ocr.delay(image_bytes)
 
-    if "error" in text:
-        return JSONResponse({"error": text["error"]})
+    # Wait for result (polling Redis backend)
+    while not task.ready():
+        await asyncio.sleep(0.2)
 
+    result = task.result
 
-    return JSONResponse({"extracted_text": text['translated_text']})
+    return JSONResponse({"extracted_text": result['text']})

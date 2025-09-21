@@ -2,6 +2,7 @@ version: '3.8'
 services:
   ocr_app:
     build: ./api
+    image: ocr_app:latest
     container_name: ocr_app
     ports:
       - "5000:5000"
@@ -12,6 +13,16 @@ services:
     command: uvicorn api.app:app --host 0.0.0.0 --port 5000 --reload
     env_file:
       - .env
+
+  celery_worker:
+    image: ocr_app:latest
+    command: watchmedo auto-restart --recursive -- celery -A celery.celery worker --loglevel=info --logfile=logs/celery.log
+    volumes:
+      - ./api:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
 
   react-app:
     build: ./web
@@ -24,3 +35,6 @@ services:
       - ocr_app
     env_file:
       - .env
+
+  redis:
+    image: redis:7
