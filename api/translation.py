@@ -76,6 +76,12 @@ class OpenAITranslator(BaseTranslatorStrategy):
         self.model = "gpt-4o-mini" # or another model
 
     def translate(self, text, from_lang, to_lang):
+        mappings = {
+                "sv" : "Swedish",
+                "en" : "English"
+        }
+        from_lang = mappings.get(from_lang)
+        to_lang = mappings.get(to_lang)
         prompt_messages = [
             {"role": "system", "content": f"You are a professional translator. Translate the following text from {from_lang} to {to_lang}."},
             {"role": "user", "content": f"Translate this: '{text}'"}

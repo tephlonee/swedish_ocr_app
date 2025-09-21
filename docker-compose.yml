@@ -2,17 +2,25 @@ version: '3.8'
 services:
   ocr_app:
     build: ./api
+    container_name: ocr_app
     ports:
       - "5000:5000"
+    expose:
+      - "5000"
     volumes:
-      - ./api:/app
-    command: uvicorn app:app --host 0.0.0.0 --port 5000 --reload
+      - ./api:/app/api
+    command: uvicorn api.app:app --host 0.0.0.0 --port 5000 --reload
+    env_file:
+      - .env
 
   react-app:
     build: ./web
+    container_name: react_app
     ports:
       - "3000:80"
     volumes:
       - ./web:/app
     depends_on:
       - ocr_app
+    env_file:
+      - .env

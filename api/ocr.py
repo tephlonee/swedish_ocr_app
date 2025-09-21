@@ -28,20 +28,13 @@ import tempfile
 import math
 from typing import Optional, Union
 
-try:
-    import pytesseract
-    from PIL import Image
-    import cv2
-    import numpy as np
-    from transformers import pipeline, MarianMTModel, MarianTokenizer
-    from deskew import determine_skew
-    
-    from api.translation import Translator
-except ImportError as e:
-    print(f"Missing required library: {e}")
-    print("Please install required packages:")
-    print("pip install pytesseract Pillow transformers torch opencv-python")
-    sys.exit(1)
+import pytesseract
+from PIL import Image
+import cv2
+import numpy as np
+from deskew import determine_skew
+from api.translation import Translator
+
     
 
 def deskew_image(image: np.ndarray) -> np.ndarray:
@@ -327,8 +320,6 @@ class ResidencePermitProcessor:
         }
 
         # Save results if output file specified
-        if output_file:
-            self.save_results(results, output_file)
 
         return results
 

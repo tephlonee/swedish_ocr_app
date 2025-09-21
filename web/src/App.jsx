@@ -29,10 +29,10 @@ function App() {
     formData.append('file', file);
 
     try {
-      const res = await axios.post('http://ocr_app:5000/ocr', formData, {
+      const res = await axios.post('/api/ocr/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setText(res.data.text);
+      setText(res.data.extracted_text);
     } catch (err) {
       setText('Error processing image');
     }

@@ -9,3 +9,4 @@ openai
 googletrans
 uvicorn
 fastapi
+python-multipart
