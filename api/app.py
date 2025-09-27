@@ -3,7 +3,7 @@ import asyncio
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 
-from api.celery import process_ocr
+from api.worker import process_ocr
 
 
 app = FastAPI()

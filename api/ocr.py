@@ -33,8 +33,10 @@ from PIL import Image
 import cv2
 import numpy as np
 from deskew import determine_skew
-from api.translation import Translator
-
+try:
+    from api.translation import Translator
+except ModuleNotFoundError:
+    from translation import Translator
     
 
 def deskew_image(image: np.ndarray) -> np.ndarray:

@@ -13,16 +13,23 @@ services:
     command: uvicorn api.app:app --host 0.0.0.0 --port 5000 --reload
     env_file:
       - .env
+    depends_on:
+      - celery_worker
+    networks:
+      - mynetwork
 
   celery_worker:
     image: ocr_app:latest
-    command: watchmedo auto-restart --recursive -- celery -A celery.celery worker --loglevel=info --logfile=logs/celery.log
+    container_name : celery_worker
+    command: celery -A api.worker worker --loglevel=info
     volumes:
-      - ./api:/app
+      - ./api:/app/api
     env_file:
       - .env
     depends_on:
       - redis
+    networks:
+      - mynetwork
 
   react-app:
     build: ./web
@@ -35,6 +42,14 @@ services:
       - ocr_app
     env_file:
       - .env
+    networks:
+      - mynetwork
 
   redis:
     image: redis:7
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

@@ -1,6 +1,9 @@
 import os
 
-from api.config import env
+try:
+    from api.config import env
+except ModuleNotFoundError:
+    from config import env
 
 from openai import OpenAI
 from googletrans import Translator as GoogleTranslator
